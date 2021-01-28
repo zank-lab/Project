@@ -2,11 +2,11 @@ package pl.edu.pwr.s241843.blutacz;
 
 
 
-public class Wartosci {
+public class ListviewData {
     private String parametr;
     private String wartosc;
 
-    public Wartosci(String parametr, String wartosc) {
+    public ListviewData(String parametr, String wartosc) {
         this.parametr = parametr;
         this.wartosc = wartosc;
     }

@@ -13,10 +13,10 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
-class ParametryAdapter extends ArrayAdapter<Wartosci> {
+class ListviewAdapter extends ArrayAdapter<ListviewData> {
     private Context kontekst;
     private int _resource;
-    public ParametryAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Wartosci> objects) {
+    public ListviewAdapter(@NonNull Context context, int resource, @NonNull ArrayList<ListviewData> objects) {
         super(context, resource, objects);
         kontekst=context;
         _resource=resource;
@@ -29,7 +29,7 @@ class ParametryAdapter extends ArrayAdapter<Wartosci> {
         String parametr = getItem(position).getParametr();
         String wartosc = getItem(position).getWartosc();
 
-        Wartosci obiekt = new Wartosci(parametr,wartosc);
+        ListviewData obiekt = new ListviewData(parametr,wartosc);
 
         LayoutInflater inflater = LayoutInflater.from(kontekst);
         convertView=inflater.inflate(_resource,parent,false);

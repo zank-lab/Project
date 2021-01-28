@@ -1,6 +1,5 @@
 package pl.edu.pwr.s241843.blutacz;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,11 +11,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.util.Log;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.DataInputStream;
@@ -25,13 +20,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class parameters extends AppCompatActivity {
+public class Parameters extends AppCompatActivity {
     String address = null;
-    BluetoothAdapter myBluetooth = null;
-    BluetoothSocket btSocket = null;
-    private boolean isBtConnected = false;
-    private ArrayList<Wartosci> parametry;
-    private Wartosci ph,tlen,temp,ntu;
+    BluetoothAdapter bluetooth = null;
+    BluetoothSocket bluetoohSocket = null;
+    private boolean connected = false;
+    private ArrayList<ListviewData> parametry;
+    private ListviewData ph,tlen,temp,ntu;
     static final UUID DEFAULT_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private Handler handler;
     @Override
@@ -41,13 +36,13 @@ public class parameters extends AppCompatActivity {
         Intent intent = getIntent();
         address = intent.getStringExtra(MainActivity.EXTRA_ADDRESS);
 
-        new parameters.ConnectBT().execute();
+        new Parameters.ConnectBluetooth().execute();
         handler = new Handler();
         ListView lista = findViewById(R.id.list);
 
         addItemsListView();
 
-        final ParametryAdapter adapter = new ParametryAdapter(this,R.layout.adapter, parametry);
+        final ListviewAdapter adapter = new ListviewAdapter(this,R.layout.adapter, parametry);
         lista.setAdapter(adapter);
 
         final Runnable r = new Runnable() {
@@ -88,15 +83,14 @@ public class parameters extends AppCompatActivity {
                 parametry.get(0).setWartosc(lines[i]);
             }
         }
-        
-
 
     }
+
     public void addItemsListView(){
-        Wartosci ph = new Wartosci("PH:", "-");
-        Wartosci tlen = new Wartosci("Rozpuszczony tlen:", "-");
-        Wartosci temp = new Wartosci("Temperatura:", "-");
-        Wartosci ntu = new Wartosci("NTU:", "-");
+        ListviewData ph = new ListviewData("PH:", "-");
+        ListviewData tlen = new ListviewData("Rozpuszczony tlen:", "-");
+        ListviewData temp = new ListviewData("Temperatura:", "-");
+        ListviewData ntu = new ListviewData("NTU:", "-");
         parametry = new ArrayList<>();
         parametry.add(ph);
         parametry.add(tlen);
@@ -105,20 +99,19 @@ public class parameters extends AppCompatActivity {
     }
 
     private String receive () {
-        byte[] buffer = new byte[256];  // buffer store for the stream
-        int bytes; // bytes returned from read()
-        InputStream tmpIn = null;
+        byte[] buffer = new byte[256];
+        int bytes;
+        InputStream tmpInput = null;
         String value;
-        if ( btSocket != null ) {
-
+        if ( bluetoohSocket != null ) {
             try {
-                tmpIn = btSocket.getInputStream();
-                DataInputStream mmInStream = new DataInputStream(tmpIn);
-                bytes = mmInStream.read(buffer);
+                tmpInput = bluetoohSocket.getInputStream();
+                DataInputStream StreamIN = new DataInputStream(tmpInput);
+                bytes = StreamIN.read(buffer);
                 value = new String(buffer, 0, bytes);
                 return value;
             } catch (IOException e) {
-                msg("Error");
+                messege("Error");
             }
         }
         return null;
@@ -126,11 +119,11 @@ public class parameters extends AppCompatActivity {
 
 
 
-    private void msg(String s) {
+    private void messege(String s) {
         Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
     }
 
-    private class ConnectBT extends AsyncTask<Void, Void, Void> {
+    private class ConnectBluetooth extends AsyncTask<Void, Void, Void> {
         private boolean ConnectSuccess = true;
 
         @Override
@@ -142,26 +135,26 @@ public class parameters extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... devices) {
             try {
-                if (btSocket == null || !isBtConnected) {
-                    myBluetooth = BluetoothAdapter.getDefaultAdapter();
-                    BluetoothDevice hc = myBluetooth.getRemoteDevice(address);
+                if (bluetoohSocket == null || !connected) {
+                    bluetooth = BluetoothAdapter.getDefaultAdapter();
+                    BluetoothDevice hc = bluetooth.getRemoteDevice(address);
                     try {
-                        if (myBluetooth != null)
+                        if (bluetooth != null)
                         {
-                            btSocket= hc.createRfcommSocketToServiceRecord(hc.getUuids()[0].getUuid());
+                            bluetoohSocket = hc.createRfcommSocketToServiceRecord(hc.getUuids()[0].getUuid());
                         }
                     }
                     catch (NullPointerException e)
                     {
                         try {
-                            btSocket= hc.createRfcommSocketToServiceRecord(DEFAULT_UUID);
+                            bluetoohSocket = hc.createRfcommSocketToServiceRecord(DEFAULT_UUID);
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }
                     }
-                    catch (IOException e) { }
+                    catch (IOException ignored) { }
                     BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-                    btSocket.connect();
+                    bluetoohSocket.connect();
                 }
             } catch (IOException e) {
                 ConnectSuccess = false;
@@ -174,11 +167,11 @@ public class parameters extends AppCompatActivity {
             super.onPostExecute(result);
 
             if (!ConnectSuccess) {
-                msg("Connection Failed. Is it a SPP Bluetooth? Try again.");
+                messege("Connection Failed. Is it a SPP Bluetooth? Try again.");
                 finish();
             } else {
-                msg("Connected");
-                isBtConnected = true;
+                messege("Connected");
+                connected = true;
             }
 
         }
