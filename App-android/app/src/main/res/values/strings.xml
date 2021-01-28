@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Blutacz</string>
+    <string name="buutoon_con">CONNECT TO HC-05</string>
+    <string name="PH">PH :</string>
+    <string name="DO">Dissolved Oxygen</string>
+    <string name="temp">Temperature</string>
+    <string name="ec">Electric Conductivity</string>
+    <string name="zametnienie">Zametnienie</string>
+
+</resources>
