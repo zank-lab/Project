@@ -26,7 +26,7 @@ public class Parameters extends AppCompatActivity {
     BluetoothSocket bluetoohSocket = null;
     private boolean connected = false;
     private ArrayList<ListviewData> parametry;
-    private ListviewData ph,tlen,temp,ntu;
+    private ListviewData ph,tlen,temp,ntu,ec;
     static final UUID DEFAULT_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private Handler handler;
     @Override
@@ -76,11 +76,17 @@ public class Parameters extends AppCompatActivity {
                 parametry.get(3).setWartosc(lines[i]);
             } else if (lines[i].contains("do")) {
                 lines[i] = lines[i].replaceAll("do", "");
-                lines[i] += "mg/l";
+                lines[i] += " mg/l";
                 parametry.get(1).setWartosc(lines[i]);
             } else if (lines[i].contains("ph")) {
                 lines[i] = lines[i].replaceAll("ph", "");
                 parametry.get(0).setWartosc(lines[i]);
+            }
+            else if (lines[i].contains("ec")) {
+                lines[i] = lines[i].replaceAll("ec", "");
+                lines[i] += " mS/cm";
+                parametry.get(4).setWartosc(lines[i]);
+                System.out.println(lines[i]);
             }
         }
 
@@ -91,11 +97,13 @@ public class Parameters extends AppCompatActivity {
         ListviewData tlen = new ListviewData("Rozpuszczony tlen:", "-");
         ListviewData temp = new ListviewData("Temperatura:", "-");
         ListviewData ntu = new ListviewData("NTU:", "-");
+        ListviewData ec = new ListviewData("Przewodność:", "-");
         parametry = new ArrayList<>();
         parametry.add(ph);
         parametry.add(tlen);
         parametry.add(temp);
         parametry.add(ntu);
+        parametry.add(ec);
     }
 
     private String receive () {
