@@ -8,11 +8,11 @@ ph::ph(int pin){
 }
 
 String ph::func_ph(){
-
-     for(int i=0;i<ArrayLenth;i++)       //Get 10 sample value from the sensor for smooth the value
+  
+for(int i=0;i<ArrayLenth;i++)       //Get 10 sample value from the sensor for smooth the value
   { 
     buf[i]=analogRead(_pin);
-    delay(10);
+    delay(1);
   }
   for(int i=0;i<(ArrayLenth-1);i++)        //sort the analog from small to large
   {
@@ -26,17 +26,13 @@ String ph::func_ph(){
       }
     }
   }
-  avgValue=0;
-  for(int i=median_offset;i<(ArrayLenth-median_offset);i++)                      //take the average value of 6 center sample
-    avgValue+=buf[i];
-  float phValue=(float)avgValue*5.0/1023/(ArrayLenth-2*median_offset); //convert the analog into millivolt
-// Serial.print("    vol is:");  
-//  Serial.print(phValue,2);
- // Serial.println(" ");
-  phValue=3.5*phValue;                      //convert the millivolt into pH value
- // Serial.print("    pH:");  
-//  Serial.print(phValue,2);
-//  Serial.println(" ");
-  return String(phValue);
+ avgValue=0;
+ for(int i=median_offset;i<(ArrayLenth-median_offset);i++)                      
+ avgValue+=buf[i];
+ float phValue=(float)avgValue*5000.0/1023/(ArrayLenth-2*median_offset); 
+
+ phValue=phValue/1000;
+ phValue=3.55*phValue-0.04;                      
+ return String(phValue);
   
 }

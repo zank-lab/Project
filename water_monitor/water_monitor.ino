@@ -3,7 +3,7 @@
 
 LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
-sensors sensors(4,12, A2, A0, A3);
+sensors sensors(4,12, A2, A0, A3, A5);
 
 void setup(void) 
 { 
@@ -14,13 +14,14 @@ void setup(void)
 void loop(void) 
 { 
   sensors.result();
-  print_lcd(0, "Temp: " + sensors.get_temperature() );
-  print_lcd(1, "ph: " + sensors.get_ph_val() + "    ");
-  delay(5000);
-  print_lcd(0, "ntu: " + sensors.get_turbidity_val() + "  " );
-  print_lcd(1, "do: " + String(sensors.get_do()) + " mg/l" );
-   delay(5000);
-   
+  print_lcd(0, "Temp: " + sensors.get_temperature() + " C         " );
+ print_lcd(1, "ph: " + sensors.get_ph_val() + "          ");
+delay(5000);
+print_lcd(0, "ntu: " + sensors.get_turbidity_val() + "          " );
+print_lcd(1, "do: " + String(sensors.get_do()) + " mg/l     " );
+delay(5000);
+ print_lcd(0, "ec: " + sensors.get_ec_val() + " mS/cm    " );
+ delay(5000);
 } 
 
 

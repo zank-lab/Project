@@ -10,7 +10,7 @@ void bluetooth::send_bluetooth(String msg){
 //  if( digitalRead(_pin)==HIGH ){
 //    Serial.print("Master sent : ");
 // Serial.println(msg);
-//    Serial1.println(msg);
+    Serial1.println(msg);
 //  }
 //  else{
 //Serial.println("Bluetooth not connected");
