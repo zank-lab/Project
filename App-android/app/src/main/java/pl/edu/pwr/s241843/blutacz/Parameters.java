@@ -3,6 +3,7 @@ package pl.edu.pwr.s241843.blutacz;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -21,10 +22,10 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class Parameters extends AppCompatActivity {
-    String address = null;
+    String adres = null;
     BluetoothAdapter bluetooth = null;
-    BluetoothSocket bluetoohSocket = null;
-    private boolean connected = false;
+    BluetoothSocket socket = null;
+    private boolean polaczono = false;
     private ArrayList<ListviewData> parametry;
     private ListviewData ph,tlen,temp,ntu,ec;
     static final UUID DEFAULT_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -34,9 +35,9 @@ public class Parameters extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parameters);
         Intent intent = getIntent();
-        address = intent.getStringExtra(MainActivity.EXTRA_ADDRESS);
+        adres = intent.getStringExtra(MainActivity.EXTRA_ADDRESS);
 
-        new Parameters.ConnectBluetooth().execute();
+        new PolaczBluetooth().execute();
         handler = new Handler();
         ListView lista = findViewById(R.id.list);
 
@@ -57,7 +58,7 @@ public class Parameters extends AppCompatActivity {
 
 
     private void UpdateResults(){
-        String tekst = receive();
+        String tekst = Odbierz();
         System.out.println(tekst);
         assert tekst != null;
         String[] lines = tekst.split("\\r?\\n");
@@ -106,20 +107,20 @@ public class Parameters extends AppCompatActivity {
         parametry.add(ec);
     }
 
-    private String receive () {
-        byte[] buffer = new byte[256];
+    private String Odbierz() {
+        byte[] bufor = new byte[256];
         int bytes;
-        InputStream tmpInput = null;
+        InputStream wejscie_tmp = null;
         String value;
-        if ( bluetoohSocket != null ) {
+        if ( socket != null ) {
             try {
-                tmpInput = bluetoohSocket.getInputStream();
-                DataInputStream StreamIN = new DataInputStream(tmpInput);
-                bytes = StreamIN.read(buffer);
-                value = new String(buffer, 0, bytes);
+                wejscie_tmp = socket.getInputStream();
+                DataInputStream strumien_in = new DataInputStream(wejscie_tmp);
+                bytes = strumien_in.read(bufor);
+                value = new String(bufor, 0, bytes);
                 return value;
             } catch (IOException e) {
-                messege("Error");
+                wyswietlWiadomosc("blad przy odbiorze danych");
             }
         }
         return null;
@@ -127,12 +128,13 @@ public class Parameters extends AppCompatActivity {
 
 
 
-    private void messege(String s) {
-        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
+    private void wyswietlWiadomosc(String wiadomosc) {
+        Toast.makeText(getApplicationContext(), wiadomosc, Toast.LENGTH_LONG).show();
     }
 
-    private class ConnectBluetooth extends AsyncTask<Void, Void, Void> {
-        private boolean ConnectSuccess = true;
+    @SuppressLint("StaticFieldLeak")
+    private class PolaczBluetooth extends AsyncTask<Void, Void, Void> {
+        boolean polaczono = true;
 
         @Override
         protected void onPreExecute() {
@@ -143,29 +145,29 @@ public class Parameters extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... devices) {
             try {
-                if (bluetoohSocket == null || !connected) {
+                if (socket == null || !polaczono) {
                     bluetooth = BluetoothAdapter.getDefaultAdapter();
-                    BluetoothDevice hc = bluetooth.getRemoteDevice(address);
+                    BluetoothDevice hc = bluetooth.getRemoteDevice(adres);
                     try {
                         if (bluetooth != null)
                         {
-                            bluetoohSocket = hc.createRfcommSocketToServiceRecord(hc.getUuids()[0].getUuid());
+                            socket = hc.createRfcommSocketToServiceRecord(hc.getUuids()[0].getUuid());
                         }
                     }
                     catch (NullPointerException e)
                     {
                         try {
-                            bluetoohSocket = hc.createRfcommSocketToServiceRecord(DEFAULT_UUID);
+                            socket = hc.createRfcommSocketToServiceRecord(DEFAULT_UUID);
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }
                     }
                     catch (IOException ignored) { }
                     BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-                    bluetoohSocket.connect();
+                    socket.connect();
                 }
             } catch (IOException e) {
-                ConnectSuccess = false;
+                polaczono = false;
             }
             return null;
         }
@@ -174,12 +176,12 @@ public class Parameters extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
 
-            if (!ConnectSuccess) {
-                messege("Connection Failed. Is it a SPP Bluetooth? Try again.");
+            if (!polaczono) {
+                wyswietlWiadomosc("nie polaczono");
                 finish();
             } else {
-                messege("Connected");
-                connected = true;
+                wyswietlWiadomosc("polaczono");
+                polaczono = true;
             }
 
         }
