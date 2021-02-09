@@ -12,7 +12,7 @@ void bluetooth::send_bluetooth(String msg){
 // Serial.println(msg);
     Serial1.println(msg);
 //  }
-//  else{
+//  else{ //
 //Serial.println("Bluetooth not connected");
- //   }
+   }
 }
